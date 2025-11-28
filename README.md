@@ -1,14 +1,14 @@
 # Sistema de Consulta SOAP - MNI
 
-Sistema web desenvolvido em Python para realizar consultas a processos judiciais através do MNI (Modelo Nacional de Interoperabilidade) utilizando requisições SOAP/WSDL.
+Sistema web desenvolvido em Python para consultar processos judiciais através do MNI (Modelo Nacional de Interoperabilidade) utilizando requisições SOAP/WSDL, com visualização organizada de movimentos e download de documentos vinculados.
 
 ## 🚀 Tecnologias
 
 - **Python 3.8+**
-- **Flask** - Framework web
-- **Zeep** - Cliente SOAP/WSDL
-- **LXML** - Processamento XML
-- **HTML5/CSS3/JavaScript** - Frontend
+- **Flask 3.0.0** - Framework web
+- **Zeep 4.2.1** - Cliente SOAP/WSDL
+- **LXML 5.1.0** - Processamento XML
+- **HTML5/CSS3/JavaScript** - Frontend responsivo
 
 ## 📋 Pré-requisitos
 
@@ -18,13 +18,13 @@ Sistema web desenvolvido em Python para realizar consultas a processos judiciais
 
 ## 🔧 Instalação
 
-1. Clone o repositório ou baixe os arquivos:
+### 1. Clone ou baixe os arquivos:
 ```bash
 git clone <seu-repositorio>
 cd sistema-soap-mni
 ```
 
-2. Crie um ambiente virtual (recomendado):
+### 2. Crie um ambiente virtual (recomendado):
 ```bash
 python -m venv venv
 
@@ -35,21 +35,23 @@ source venv/bin/activate
 venv\Scripts\activate
 ```
 
-3. Instale as dependências:
+### 3. Instale as dependências:
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Configure as variáveis de ambiente:
+### 4. Configure as variáveis de ambiente:
 ```bash
 cp .env.example .env
 ```
 
-5. Edite o arquivo `.env` com suas credenciais:
-```
-SOAP_WSDL_URL=https://seu-endpoint.com/servico?wsdl
+### 5. Edite o arquivo `.env`:
+```env
+SOAP_WSDL_URL=https://eproc-1g-to.dev.br/ws/intercomunicacao3.0/wsdl/servico-intercomunicacao-3.0.0.wsdl
 SOAP_USUARIO=seu_usuario
 SOAP_SENHA=sua_senha_hash
+SOAP_SERVIDOR_BASE=https://eproc-1g-to.dev.br
+SOAP_VERIFY_SSL=false
 FLASK_SECRET_KEY=uma-chave-secreta-aleatoria
 FLASK_DEBUG=True
 ```
@@ -62,275 +64,374 @@ FLASK_DEBUG=True
 python app.py
 ```
 
-O sistema estará disponível em: `http://localhost:5000`
+Acesse: `http://localhost:5000`
 
 ### Interface Web
 
-1. Acesse `http://localhost:5000`
-2. Insira o número do processo (20 dígitos)
-3. Configure as opções de consulta desejadas
-4. Clique em "Consultar Processo"
+1. **Consultar Processo**
+   - Acesse a página inicial
+   - Insira o número do processo (20 dígitos)
+   - Configure opções de consulta
+   - Clique em "Consultar Processo"
 
-### API REST
+2. **Visualizar Movimentos e Documentos**
+   - Movimentos são exibidos em cards organizados
+   - Apenas movimentos com documentos vinculados são mostrados
+   - Cada documento exibe:
+     - Rótulo (descrição amigável)
+     - ID do documento
+     - Botão "Enviar para Análise"
 
-O sistema também disponibiliza uma API REST para integração:
+3. **Download de Documentos**
+   - Clique em "Enviar para Análise" no documento desejado
+   - O arquivo será baixado automaticamente
+   - Nome do arquivo inclui contexto do movimento
+
+## ✨ Funcionalidades Principais
+
+### 📌 Visualização de Movimentos
+- ✅ Exibe apenas movimentos com documentos vinculados
+- ✅ Informações detalhadas de cada movimento
+- ✅ Data e hora formatadas
+- ✅ Descrição do movimento local
+- ✅ Tipo de movimento
+
+### 📄 Gestão de Documentos
+- ✅ Lista documentos vinculados por movimento
+- ✅ Exibe rótulo amigável (campo `outroParametro.rotulo`)
+- ✅ Fallback para campo `descricao`
+- ✅ Download com nome contextualizado
+- ✅ Suporte a múltiplos formatos (PDF, HTML, DOC, etc)
+
+### 🔍 Consulta de Processos
+- ✅ Busca por número CNJ (20 dígitos)
+- ✅ Filtros por data (inicial/final)
+- ✅ Opções configuráveis:
+  - Incluir cabeçalho
+  - Incluir partes
+  - Incluir endereços
+  - Incluir movimentos
+  - Incluir documentos
+
+### 🎨 Interface Minimalista
+- ✅ Design limpo e profissional
+- ✅ Link "Voltar" no navbar
+- ✅ Sem elementos desnecessários
+- ✅ Foco no conteúdo essencial
+- ✅ Responsivo para mobile
+
+### 🔧 Funcionalidades Técnicas
+- ✅ API REST para integração
+- ✅ Descoberta dinâmica de operações SOAP
+- ✅ Correção automática de WSDL e XSD
+- ✅ Suporte a SSL auto-assinado
+- ✅ Logs detalhados
+- ✅ Tratamento de erros robusto
+
+## 📡 API REST
+
+### Consultar Processo
 
 **Endpoint:** `POST /api/consultar`
 
-**Content-Type:** `application/json`
-
-**Exemplo de requisição:**
-```json
-{
-  "numero_processo": "00058128320258272729",
-  "data_inicial": "2024-01-01",
-  "data_final": "2024-12-31",
-  "incluir_cabecalho": true,
-  "incluir_partes": false,
-  "incluir_enderecos": false,
-  "incluir_movimentos": true,
-  "incluir_documentos": true
-}
-```
-
-**Exemplo com cURL:**
+**Exemplo:**
 ```bash
 curl -X POST http://localhost:5000/api/consultar \
   -H "Content-Type: application/json" \
   -d '{
     "numero_processo": "00058128320258272729",
-    "incluir_cabecalho": true,
-    "incluir_movimentos": true
+    "incluir_movimentos": true,
+    "incluir_documentos": true
   }'
 ```
 
-**Exemplo com Python:**
-```python
-import requests
-
-url = "http://localhost:5000/api/consultar"
-data = {
-    "numero_processo": "00058128320258272729",
-    "incluir_cabecalho": True,
-    "incluir_movimentos": True
-}
-
-response = requests.post(url, json=data)
-resultado = response.json()
-
-if resultado.get('success'):
-    print("Consulta realizada com sucesso!")
-    print(resultado['data'])
-else:
-    print(f"Erro: {resultado.get('error')}")
-```
-
-**Exemplo com JavaScript:**
-```javascript
-fetch('http://localhost:5000/api/consultar', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    numero_processo: '00058128320258272729',
-    incluir_cabecalho: true,
-    incluir_movimentos: true
-  })
-})
-.then(response => response.json())
-.then(data => {
-  if (data.success) {
-    console.log('Dados do processo:', data.data);
-  } else {
-    console.error('Erro:', data.error);
+**Resposta:**
+```json
+{
+  "success": true,
+  "data": {
+    "processo": {
+      "movimento": [...],
+      "documento": [...]
+    }
   }
-});
-```
-
-**Exemplo com PHP:**
-```php
-<?php
-$url = 'http://localhost:5000/api/consultar';
-$data = [
-    'numero_processo' => '00058128320258272729',
-    'incluir_cabecalho' => true,
-    'incluir_movimentos' => true
-];
-
-$options = [
-    'http' => [
-        'header'  => "Content-Type: application/json\r\n",
-        'method'  => 'POST',
-        'content' => json_encode($data)
-    ]
-];
-
-$context  = stream_context_create($options);
-$result = file_get_contents($url, false, $context);
-$response = json_decode($result, true);
-
-if ($response['success']) {
-    echo "Consulta realizada com sucesso!\n";
-    print_r($response['data']);
-} else {
-    echo "Erro: " . $response['error'] . "\n";
 }
-?>
 ```
+
+### Download de Documento
+
+**Endpoint:** `POST /api/download-documento`
+
+**Exemplo:**
+```bash
+curl -X POST http://localhost:5000/api/download-documento \
+  -H "Content-Type: application/json" \
+  -d '{
+    "numero_processo": "00058128320258272729",
+    "id_documento": "771761320987264735528069530499"
+  }'
+```
+
+**Resposta:**
+```json
+{
+  "success": true,
+  "data": {
+    "documentos": [{
+      "idDocumento": "771761...",
+      "mimetype": "application/pdf",
+      "conteudo_base64": "JVBERi0xLjQK..."
+    }]
+  }
+}
+```
+
+## 📊 Estrutura de Dados
+
+### Movimentos com Documentos Vinculados
+
+```json
+{
+  "processo": {
+    "movimento": [
+      {
+        "idMovimento": "12345",
+        "dataHora": "2024-11-27T14:30:00",
+        "movimentoLocal": {
+          "descricao": "Petição Inicial apresentada"
+        },
+        "tipoMovimento": "PETIÇÃO",
+        "idDocumentoVinculado": [
+          "771761320987264735528069530499",
+          "771761320987264735528069530500"
+        ]
+      }
+    ],
+    "documento": [
+      {
+        "idDocumento": "771761320987264735528069530499",
+        "descricao": "Documento oficial",
+        "mimetype": "application/pdf",
+        "outroParametro": [
+          {
+            "nome": "rotulo",
+            "valor": "CNPJ - Comprovante de Inscrição"
+          },
+          {
+            "nome": "tamanho",
+            "valor": "89188"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Campo outroParametro
+
+O sistema busca a descrição do documento no campo `rotulo` dentro do array `outroParametro`:
+
+**Prioridade:**
+1. `outroParametro[nome='rotulo'].valor` ⭐
+2. `descricao` (Fallback)
+3. "Documento" (Padrão)
 
 ## 📁 Estrutura do Projeto
 
 ```
 sistema-soap-mni/
-├── app.py                  # Aplicação Flask principal
-├── soap_service.py         # Serviço SOAP
-├── requirements.txt        # Dependências
-├── .env.example           # Exemplo de configuração
-├── templates/             # Templates HTML
-│   ├── base.html
-│   ├── index.html
-│   ├── resultado.html
-│   ├── debug_xml.html
-│   ├── sobre.html
-│   ├── 404.html
-│   └── 500.html
-└── static/                # Arquivos estáticos
+├── app.py                     # Aplicação Flask principal
+├── soap_service.py            # Serviço SOAP (Zeep)
+├── requirements.txt           # Dependências Python
+├── .env.example              # Exemplo de configuração
+├── .env                      # Configuração (não versionado)
+├── .gitignore               # Arquivos ignorados
+├── templates/               # Templates Jinja2
+│   ├── base.html           # Template base
+│   ├── index.html          # Página inicial
+│   ├── resultado.html      # Resultados da consulta
+│   ├── debug_xml.html      # Debug SOAP
+│   ├── sobre.html          # Sobre o sistema
+│   ├── 404.html           # Página não encontrada
+│   └── 500.html           # Erro interno
+└── static/                 # Arquivos estáticos
     ├── css/
-    │   └── style.css
+    │   └── style.css       # Estilos CSS
     └── js/
-        └── script.js
+        └── script.js       # JavaScript
+
+docs/ (arquivos de documentação)
+├── SOLUCAO_SSL.md              # Solução de problemas SSL
+├── CORRECAO_SERVIDOR.md        # Correção de placeholders
+├── DOWNLOAD_DOCUMENTOS.md      # Guia de download
+├── ESTRUTURA_MOVIMENTOS.md     # Estrutura de dados
+├── MELHORIAS_INTERFACE.md      # Melhorias de UX
+├── OUTRO_PARAMETRO.md          # Campo outroParametro
+└── MELHORIAS_LAYOUT.md         # Layout minimalista
 ```
-
-## ✨ Funcionalidades
-
-- ✅ Consulta de processos por número CNJ
-- ✅ Filtros por data inicial e final
-- ✅ Opções configuráveis de inclusão de dados
-- ✅ Visualização formatada dos resultados
-- ✅ Exportação em JSON
-- ✅ Modo debug com visualização de XMLs SOAP
-- ✅ API REST para integração
-- ✅ Interface responsiva
-- ✅ Validação de dados
-- ✅ Tratamento de erros
 
 ## 🔒 Segurança
 
-- Credenciais em variáveis de ambiente
-- Validação de entrada de dados
-- Sanitização de XMLs
-- Logs de auditoria
-- HTTPS recomendado em produção
+- ✅ Credenciais em variáveis de ambiente (`.env`)
+- ✅ Validação de entrada (número processo com 20 dígitos)
+- ✅ Sanitização de dados
+- ✅ Logs de auditoria
+- ✅ Suporte a SSL/TLS
+- ✅ `.gitignore` configurado (não versionada credenciais)
 
-## 🐛 Debug
+## 🐛 Problemas Resolvidos
 
-Para visualizar os XMLs de requisição e resposta SOAP:
+### SSL Auto-Assinado
+```env
+SOAP_VERIFY_SSL=false
+```
+Permite conexão com servidores que usam certificados auto-assinados.
 
-1. Acesse a seção "Modo Debug" na página inicial
-2. Insira o número do processo
-3. Clique em "Ver XML Debug"
+### Placeholder [servidor] no WSDL
+```env
+SOAP_SERVIDOR_BASE=https://eproc-1g-to.dev.br
+```
+Substitui automaticamente `[servidor]` por URL completa.
 
-Ou use a função diretamente no código:
+### Caminhos Relativos de XSD
+O sistema converte automaticamente caminhos relativos em URLs absolutas.
 
-```python
-from soap_service import SOAPService
+### Descoberta de Operações SOAP
+Mapeia dinamicamente todas as operações disponíveis no WSDL.
 
-service = SOAPService(wsdl_url, usuario, senha)
-xml_data = service.consultar_processo_raw_xml(numero_processo)
+## 🧪 Scripts de Teste
 
-print("Request XML:", xml_data['request_xml'])
-print("Response XML:", xml_data['response_xml'])
+### Testar Configuração SSL
+```bash
+python test_ssl.py
 ```
 
-## 📝 Estrutura SOAP
+### Listar Operações SOAP
+```bash
+python listar_operacoes.py
+```
 
-A requisição SOAP segue o padrão MNI v3.0.0:
+### Testar Requisição HTTP
+```bash
+python test_requisicao.py
+```
 
-```xml
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" 
-                  xmlns:v300="http://www.cnj.jus.br/mni/v300/" 
-                  xmlns:tip="http://www.cnj.jus.br/mni/v300/tipos-servico-intercomunicacao" 
-                  xmlns:int="http://www.cnj.jus.br/mni/v300/intercomunicacao">
-   <soapenv:Header/>
-   <soapenv:Body>
-      <v300:requisicaoConsultarProcesso>
-         <tip:consultante>
-            <int:autenticacaoSimples>
-               <int:usuario>SEU_USUARIO</int:usuario>
-               <int:senha>SUA_SENHA</int:senha>
-            </int:autenticacaoSimples>
-         </tip:consultante>
-         <tip:numeroProcesso>00058128320258272729</tip:numeroProcesso>
-         <tip:incluirCabecalho>true</tip:incluirCabecalho>
-         <tip:incluirMovimentos>true</tip:incluirMovimentos>
-      </v300:requisicaoConsultarProcesso>
-   </soapenv:Body>
-</soapenv:Envelope>
+## 📚 Exemplos de Integração
+
+### Python
+```python
+import requests
+
+# Consultar processo
+response = requests.post('http://localhost:5000/api/consultar', json={
+    'numero_processo': '00058128320258272729',
+    'incluir_movimentos': True,
+    'incluir_documentos': True
+})
+
+resultado = response.json()
+if resultado['success']:
+    processo = resultado['data']['processo']
+    print(f"Movimentos: {len(processo['movimento'])}")
+```
+
+### JavaScript
+```javascript
+fetch('http://localhost:5000/api/consultar', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify({
+    numero_processo: '00058128320258272729',
+    incluir_movimentos: true,
+    incluir_documentos: true
+  })
+})
+.then(res => res.json())
+.then(data => console.log(data));
+```
+
+### PHP
+```php
+<?php
+$ch = curl_init('http://localhost:5000/api/consultar');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode([
+    'numero_processo' => '00058128320258272729',
+    'incluir_movimentos' => true,
+    'incluir_documentos' => true
+]));
+
+$response = curl_exec($ch);
+$data = json_decode($response, true);
+print_r($data);
+?>
 ```
 
 ## 🚀 Deploy em Produção
 
 ### Usando Gunicorn
-
 ```bash
 pip install gunicorn
-
 gunicorn -w 4 -b 0.0.0.0:8000 app:app
 ```
 
 ### Usando Docker
-
 ```dockerfile
 FROM python:3.9-slim
 
 WORKDIR /app
-
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
+EXPOSE 8000
 
 CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "app:app"]
 ```
 
-### Variáveis de Ambiente em Produção
-
-```bash
-SOAP_WSDL_URL=https://producao.com/servico?wsdl
-SOAP_USUARIO=usuario_producao
-SOAP_SENHA=senha_hash_producao
-FLASK_SECRET_KEY=chave-secreta-forte-aleatoria
+### Variáveis de Ambiente (Produção)
+```env
+SOAP_VERIFY_SSL=true
 FLASK_DEBUG=False
-FLASK_PORT=8000
+FLASK_SECRET_KEY=chave-forte-aleatoria-producao
 ```
 
-## 🧪 Testes
+## 📖 Documentação Adicional
 
-Para testar a aplicação:
+- [MNI - CNJ](https://www.cnj.jus.br/tecnologia-da-informacao/modelo-nacional-de-interoperabilidade/)
+- [Zeep Documentation](https://docs.python-zeep.org/)
+- [Flask Documentation](https://flask.palletsprojects.com/)
 
-```bash
-# Testar servidor
-python app.py
+## ⚠️ Avisos Importantes
 
-# Testar API
-curl -X POST http://localhost:5000/api/consultar \
-  -H "Content-Type: application/json" \
-  -d '{"numero_processo": "00058128320258272729"}'
-```
+- ✅ Requer credenciais válidas do MNI
+- ✅ Use apenas para fins autorizados
+- ✅ Em produção, sempre use HTTPS
+- ✅ Mantenha credenciais seguras
+- ✅ Respeite limites de taxa de requisições
 
-## 📚 Documentação Adicional
+## 🎨 Interface
 
-- [Documentação MNI - CNJ](https://www.cnj.jus.br/tecnologia-da-informacao/modelo-nacional-de-interoperabilidade/)
-- [Documentação Zeep](https://docs.python-zeep.org/)
-- [Documentação Flask](https://flask.palletsprojects.com/)
+### Página Inicial
+- Formulário de consulta limpo
+- Validação em tempo real
+- Opções configuráveis
 
-## ⚠️ Avisos
+### Página de Resultados
+- Cards de movimentos organizados
+- Documentos vinculados por movimento
+- Botão "Enviar para Análise"
+- JSON completo disponível
+- Link "Voltar" no navbar
 
-- Este sistema requer credenciais válidas para acessar o serviço MNI
-- Use apenas para fins autorizados e legítimos
-- Em produção, sempre use HTTPS
-- Mantenha suas credenciais seguras e nunca as compartilhe
+### Design Minimalista
+- Sem elementos desnecessários
+- Foco no conteúdo
+- Responsivo
+- Profissional
 
 ## 📄 Licença
 
@@ -338,8 +439,8 @@ Este projeto é fornecido como está, sem garantias.
 
 ## 👨‍💻 Desenvolvedor
 
-Desenvolvido com Python + Flask para facilitar consultas SOAP ao MNI.
+Sistema desenvolvido em Python + Flask para consultas SOAP ao MNI, com foco em usabilidade e organização de documentos judiciais.
 
 ---
 
-**Nota:** Este sistema é uma ferramenta de consulta e não substitui o acesso oficial aos sistemas do Poder Judiciário.
+**Nota:** Este sistema é uma ferramenta auxiliar e não substitui o acesso oficial aos sistemas do Poder Judiciário.
