@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Sobre - Sistema SOAP MNI{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Sobre o Sistema</h2>
+    <p class="subtitle">Sistema de Consulta SOAP para MNI</p>
+</div>
+
+<div class="card">
+    <h3>📋 Descrição</h3>
+    <p>
+        Este sistema foi desenvolvido para facilitar a consulta de processos judiciais através do 
+        <strong>MNI (Modelo Nacional de Interoperabilidade)</strong>, utilizando requisições SOAP/WSDL.
+    </p>
+    <p>
+        O MNI é um padrão desenvolvido pelo CNJ (Conselho Nacional de Justiça) para permitir a 
+        comunicação entre diferentes sistemas judiciais no Brasil.
+    </p>
+</div>
+
+<div class="card">
+    <h3>🛠️ Tecnologias Utilizadas</h3>
+    <ul class="tech-list">
+        <li><strong>Python 3</strong> - Linguagem de programação principal</li>
+        <li><strong>Flask</strong> - Framework web minimalista e poderoso</li>
+        <li><strong>Zeep</strong> - Biblioteca para comunicação SOAP/WSDL</li>
+        <li><strong>LXML</strong> - Processamento de XML</li>
+        <li><strong>HTML5 + CSS3</strong> - Interface web moderna e responsiva</li>
+        <li><strong>JavaScript</strong> - Interatividade no frontend</li>
+    </ul>
+</div>
+
+<div class="card">
+    <h3>✨ Funcionalidades</h3>
+    <ul class="feature-list">
+        <li>✅ Consulta de processos através do número CNJ</li>
+        <li>✅ Filtros por data inicial e final</li>
+        <li>✅ Opções configuráveis de inclusão de dados (cabeçalho, partes, movimentos, etc.)</li>
+        <li>✅ Visualização formatada dos resultados</li>
+        <li>✅ Exportação dos dados em formato JSON</li>
+        <li>✅ Modo debug para visualização de XMLs SOAP</li>
+        <li>✅ API REST para integração com outros sistemas</li>
+        <li>✅ Interface responsiva e intuitiva</li>
+    </ul>
+</div>
+
+<div class="card">
+    <h3>📡 API REST</h3>
+    <p>O sistema também disponibiliza uma API REST para consultas programáticas:</p>
+    
+    <div class="api-doc">
+        <h4>POST /api/consultar</h4>
+        <p><strong>Content-Type:</strong> application/json</p>
+        
+        <p><strong>Exemplo de requisição:</strong></p>
+        <pre class="code-block">{
+  "numero_processo": "00058128320258272729",
+  "data_inicial": "2024-01-01",
+  "data_final": "2024-12-31",
+  "incluir_cabecalho": true,
+  "incluir_partes": false,
+  "incluir_enderecos": false,
+  "incluir_movimentos": true,
+  "incluir_documentos": true
+}</pre>
+
+        <p><strong>Exemplo de resposta (sucesso):</strong></p>
+        <pre class="code-block">{
+  "success": true,
+  "data": {
+    // Dados do processo
+  }
+}</pre>
+
+        <p><strong>Exemplo de resposta (erro):</strong></p>
+        <pre class="code-block">{
+  "error": "Mensagem de erro"
+}</pre>
+    </div>
+</div>
+
+<div class="card">
+    <h3>🔒 Segurança</h3>
+    <ul>
+        <li>Credenciais de acesso armazenadas em variáveis de ambiente</li>
+        <li>Validação de dados de entrada</li>
+        <li>Tratamento de erros e exceções</li>
+        <li>Logs de auditoria para todas as requisições</li>
+    </ul>
+</div>
+
+<div class="card">
+    <h3>📞 Suporte</h3>
+    <p>
+        Para dúvidas, sugestões ou relatar problemas, entre em contato através dos canais oficiais
+        ou verifique a documentação técnica do projeto.
+    </p>
+</div>
+
+<div class="card info-card">
+    <h3>⚖️ Aviso Legal</h3>
+    <p>
+        Este sistema é uma ferramenta de consulta e não substitui o acesso oficial aos sistemas
+        do Poder Judiciário. Use-o apenas se você tiver autorização e credenciais válidas para
+        acessar o serviço MNI.
+    </p>
+</div>
+{% endblock %}

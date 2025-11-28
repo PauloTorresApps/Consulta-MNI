@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}Processo {{ numero_processo }}{% endblock %}
+
+{% block content %}
+{# Seção de Movimentos com Documentos Vinculados #}
+{% if resultado.processo and resultado.processo.movimento %}
+<div class="card">
+    <h2 class="page-header">Processo {{ numero_processo }}</h2>
+    
+    <h3>📌 Movimentos com Documentos</h3>
+    
+    {% if resultado.processo.movimento is mapping %}
+        {% set movimentos = [resultado.processo.movimento] %}
+    {% else %}
+        {% set movimentos = resultado.processo.movimento %}
+    {% endif %}
+    
+    {# Criar dicionário de documentos para busca rápida #}
+    {% set documentos_dict = {} %}
+    {% if resultado.processo.documento %}
+        {% if resultado.processo.documento is mapping %}
+            {% set _ = documentos_dict.update({resultado.processo.documento.idDocumento: resultado.processo.documento}) %}
+        {% else %}
+            {% for doc in resultado.processo.documento %}
+                {% set _ = documentos_dict.update({doc.idDocumento: doc}) %}
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+    
+    {# Filtrar apenas movimentos com documentos vinculados #}
+    {% set movimentos_com_docs = [] %}
+    {% for mov in movimentos %}
+        {% if mov.idDocumentoVinculado %}
+            {% set _ = movimentos_com_docs.append(mov) %}
+        {% endif %}
+    {% endfor %}
+    
+    {% if movimentos_com_docs %}
+    <div class="movimentos-container">
+        <div class="documentos-count">
+            <strong>Total de movimentos com documentos:</strong> {{ movimentos_com_docs|length }}
+        </div>
+        
+        <div class="documentos-lista">
+            {% for mov in movimentos_com_docs %}
+            <div class="documento-item movimento-expandido">
+                <div class="documento-header">
+                    <div class="movimento-info">
+                        {% if mov.idMovimento %}
+                            <div class="documento-field">
+                                <span class="field-label">Evento:</span>
+                                <span class="field-value movimento-id">{{ mov.idMovimento }} - </span>
+                                <span class="documento-badge">
+                                    <strong>
+                                    {% if mov.movimentoLocal and mov.movimentoLocal.descricao %}
+                                        {{ mov.movimentoLocal.descricao }}
+                                    {% elif mov.descricao %}
+                                        {{ mov.descricao }}
+                                    {% endif %}
+                                    </strong>
+                                </span>
+                            </div>
+                        {% endif %}
+                        
+                        {% if mov.tipoMovimento %}
+                            <div class="documento-field">
+                                <span class="field-label">Tipo:</span>
+                                <span class="field-value">{{ mov.tipoMovimento }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                   
+                    <span class="documento-data">
+                        {% if mov.dataHora %}
+                            📅 {{ mov.dataHora }}
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div class="documento-body">
+                    {# Documentos Vinculados #}
+                    {% if mov.idDocumentoVinculado is string or mov.idDocumentoVinculado is number %}
+                        {% set docs_vinculados = [mov.idDocumentoVinculado] %}
+                    {% else %}
+                        {% set docs_vinculados = mov.idDocumentoVinculado %}
+                    {% endif %}
+                    
+                    <div class="documentos-vinculados">
+                        <div class="documentos-vinculados-lista">
+                            {% for id_doc in docs_vinculados %}
+                            {% set doc_info = documentos_dict.get(id_doc|string) %}
+                            <div class="documento-vinculado-item">
+                                <div class="documento-vinculado-info">
+                                    {% if doc_info %}
+                                        {# Buscar valor do rotulo em outroParametro (array) #}
+                                        {% set rotulo = namespace(valor='') %}
+                                        {% if doc_info.outroParametro %}
+                                            {% for param in doc_info.outroParametro %}
+                                                {% if param.nome == 'rotulo' %}
+                                                    {% set rotulo.valor = param.valor %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                        
+                                        {% if rotulo.valor %}
+                                        <div class="documento-vinculado-descricao">
+                                            📄 {{ rotulo.valor }}
+                                        </div>
+                                        {% elif doc_info.descricao %}
+                                        <div class="documento-vinculado-descricao">
+                                            📄 {{ doc_info.descricao }}
+                                        </div>
+                                        {% else %}
+                                        <div class="documento-vinculado-descricao">
+                                            📄 Documento
+                                        </div>
+                                        {% endif %}
+                                    {% else %}
+                                    <div class="documento-vinculado-descricao">
+                                        📄 Documento
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="documento-vinculado-actions">
+                                    <form method="POST" action="{{ url_for('download_documento') }}" style="display: inline;">
+                                        <input type="hidden" name="numero_processo" value="{{ numero_processo }}">
+                                        <input type="hidden" name="id_documento" value="{{ id_doc }}">
+                                        <input type="hidden" name="id_movimento" value="{{ mov.idMovimento }}">
+                                        <input type="hidden" name="descricao_movimento" value="{{ mov.movimentoLocal.descricao if mov.movimentoLocal and mov.movimentoLocal.descricao else mov.descricao }}">
+                                        <button type="submit" class="btn btn-primary btn-sm">
+                                            📤 Enviar para Análise
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="info-message">
+        📭 Nenhum movimento com documentos vinculados encontrado.
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+{# Dados JSON Brutos #}
+<div class="card">
+    <h3>📊 Dados Completos (JSON)</h3>
+    
+    <div class="result-data">
+        <pre id="resultadoJSON">{{ resultado | tojson(indent=2) }}</pre>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Syntax highlighting simples para JSON
+document.addEventListener('DOMContentLoaded', function() {
+    const pre = document.getElementById('resultadoJSON');
+    if (pre) {
+        let json = pre.textContent;
+        json = json.replace(/(".*?")/g, '<span class="json-string">$1</span>');
+        json = json.replace(/(\d+)/g, '<span class="json-number">$1</span>');
+        json = json.replace(/(true|false|null)/g, '<span class="json-boolean">$1</span>');
+        pre.innerHTML = json;
+    }
+});
+</script>
+{% endblock %}

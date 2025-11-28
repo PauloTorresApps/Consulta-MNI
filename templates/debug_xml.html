@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Debug XML - Processo {{ numero_processo }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Debug XML SOAP</h2>
+    <p class="subtitle">Processo: {{ numero_processo }}</p>
+</div>
+
+<div class="card">
+    <div class="result-actions">
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">
+            ← Voltar
+        </a>
+        <button onclick="copiarXML('request')" class="btn btn-primary">
+            📋 Copiar Request
+        </button>
+        <button onclick="copiarXML('response')" class="btn btn-primary">
+            📋 Copiar Response
+        </button>
+    </div>
+</div>
+
+{% if xml_data.request_xml %}
+<div class="card">
+    <h3>📤 Request XML (Envelope SOAP Enviado)</h3>
+    <div class="xml-container">
+        <pre id="requestXML" class="xml-content">{{ xml_data.request_xml }}</pre>
+    </div>
+</div>
+{% endif %}
+
+{% if xml_data.response_xml %}
+<div class="card">
+    <h3>📥 Response XML (Envelope SOAP Recebido)</h3>
+    <div class="xml-container">
+        <pre id="responseXML" class="xml-content">{{ xml_data.response_xml }}</pre>
+    </div>
+</div>
+{% endif %}
+
+{% if xml_data.error %}
+<div class="card">
+    <h3>❌ Erro</h3>
+    <div class="alert alert-error">
+        {{ xml_data.error }}
+    </div>
+</div>
+{% endif %}
+
+<div class="card info-card">
+    <h3>ℹ️ Sobre o Debug XML</h3>
+    <ul>
+        <li>O <strong>Request XML</strong> mostra o envelope SOAP enviado ao serviço</li>
+        <li>O <strong>Response XML</strong> mostra o envelope SOAP recebido como resposta</li>
+        <li>Use este modo para debugar problemas de comunicação ou validar a estrutura SOAP</li>
+        <li>Você pode copiar os XMLs para análise em ferramentas externas</li>
+    </ul>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Função para copiar XML para área de transferência
+function copiarXML(tipo) {
+    const elementId = tipo === 'request' ? 'requestXML' : 'responseXML';
+    const element = document.getElementById(elementId);
+    
+    if (!element) {
+        alert('XML não encontrado!');
+        return;
+    }
+    
+    const texto = element.textContent;
+    
+    navigator.clipboard.writeText(texto).then(function() {
+        alert('XML copiado para área de transferência!');
+    }, function(err) {
+        // Fallback para navegadores antigos
+        const textarea = document.createElement('textarea');
+        textarea.value = texto;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('XML copiado para área de transferência!');
+    });
+}
+
+// Syntax highlighting básico para XML
+document.addEventListener('DOMContentLoaded', function() {
+    const xmlElements = document.querySelectorAll('.xml-content');
+    
+    xmlElements.forEach(function(element) {
+        let xml = element.textContent;
+        
+        // Destacar tags
+        xml = xml.replace(/(&lt;\/?)(\w+)(.*?)(&gt;)/g, function(match, p1, p2, p3, p4) {
+            return '<span class="xml-tag">' + p1 + p2 + '</span>' + 
+                   '<span class="xml-attr">' + p3 + '</span>' + 
+                   '<span class="xml-tag">' + p4 + '</span>';
+        });
+        
+        // Destacar valores de atributos
+        xml = xml.replace(/="(.*?)"/g, '="<span class="xml-value">$1</span>"');
+        
+        element.innerHTML = xml;
+    });
+});
+</script>
+{% endblock %}
