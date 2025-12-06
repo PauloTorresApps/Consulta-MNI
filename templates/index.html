@@ -2,149 +2,180 @@
 
 {% block title %}Consultar Processo - Sistema SOAP MNI{% endblock %}
 
+{% block page_header %}
+<div class="row mb-2">
+    <div class="col-sm-6">
+        <h1 class="m-0">Consultar Processo Judicial</h1>
+    </div>
+    <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item active">Consultar</li>
+        </ol>
+    </div>
+</div>
+{% endblock %}
+
 {% block content %}
-<div class="page-header">
-    <h2>Consultar Processo Judicial</h2>
-    <p class="subtitle">Sistema de consulta ao MNI (Modelo Nacional de Interoperabilidade)</p>
-</div>
-
-<div class="card">
-    <form method="POST" action="{{ url_for('consultar') }}" id="consultaForm">
-        <div class="form-section">
-            <h3>Dados do Processo</h3>
-            
-            <div class="form-group">
-                <label for="numero_processo">
-                    Número do Processo <span class="required">*</span>
-                </label>
-                <input 
-                    type="text" 
-                    id="numero_processo" 
-                    name="numero_processo" 
-                    class="form-control"
-                    placeholder="00058128320258272729"
-                    maxlength="25"
-                    required
-                    pattern="\d{20}"
-                    title="Digite 20 dígitos numéricos"
-                >
-                <small class="form-text">Digite o número do processo com 20 dígitos (sem pontos ou traços)</small>
+<div class="row">
+    <div class="col-md-12">
+        <!-- Card de Consulta -->
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-search"></i> Dados do Processo</h3>
             </div>
+            <form method="POST" action="{{ url_for('consultar') }}" id="consultaForm">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="numero_processo">Número do Processo <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="numero_processo" name="numero_processo" 
+                                       placeholder="00058128320258272729" maxlength="25" required pattern="\d{20}"
+                                       title="Digite 20 dígitos numéricos">
+                                <small class="form-text text-muted">
+                                    <i class="fas fa-info-circle"></i> Digite o número do processo com 20 dígitos (sem pontos ou traços)
+                                </small>
+                            </div>
+                        </div>
+                    </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="data_inicial">Data Inicial</label>
-                    <input 
-                        type="date" 
-                        id="data_inicial" 
-                        name="data_inicial" 
-                        class="form-control"
-                    >
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="data_inicial">Data Inicial</label>
+                                <input type="date" class="form-control" id="data_inicial" name="data_inicial">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="data_final">Data Final</label>
+                                <input type="date" class="form-control" id="data_final" name="data_final">
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h5 class="mb-3"><i class="fas fa-cog"></i> Opções de Consulta</h5>
+                    <div class="row">
+                        <div class="col-md-6 col-lg-4">
+                            <div class="custom-control custom-checkbox mb-2">
+                                <input type="checkbox" class="custom-control-input" id="incluir_cabecalho" 
+                                       name="incluir_cabecalho" checked>
+                                <label class="custom-control-label" for="incluir_cabecalho">
+                                    <i class="fas fa-file-alt"></i> Incluir Cabeçalho
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="custom-control custom-checkbox mb-2">
+                                <input type="checkbox" class="custom-control-input" id="incluir_partes" 
+                                       name="incluir_partes">
+                                <label class="custom-control-label" for="incluir_partes">
+                                    <i class="fas fa-users"></i> Incluir Partes
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="custom-control custom-checkbox mb-2">
+                                <input type="checkbox" class="custom-control-input" id="incluir_enderecos" 
+                                       name="incluir_enderecos">
+                                <label class="custom-control-label" for="incluir_enderecos">
+                                    <i class="fas fa-map-marker-alt"></i> Incluir Endereços
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="custom-control custom-checkbox mb-2">
+                                <input type="checkbox" class="custom-control-input" id="incluir_movimentos" 
+                                       name="incluir_movimentos" checked>
+                                <label class="custom-control-label" for="incluir_movimentos">
+                                    <i class="fas fa-exchange-alt"></i> Incluir Movimentos
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="custom-control custom-checkbox mb-2">
+                                <input type="checkbox" class="custom-control-input" id="incluir_documentos" 
+                                       name="incluir_documentos" checked>
+                                <label class="custom-control-label" for="incluir_documentos">
+                                    <i class="fas fa-file-pdf"></i> Incluir Documentos
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Consultar Processo
+                    </button>
+                    <button type="reset" class="btn btn-secondary">
+                        <i class="fas fa-redo"></i> Limpar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-                <div class="form-group">
-                    <label for="data_final">Data Final</label>
-                    <input 
-                        type="date" 
-                        id="data_final" 
-                        name="data_final" 
-                        class="form-control"
-                    >
+<div class="row">
+    <div class="col-md-12">
+        <!-- Info Card -->
+        <div class="card card-info">
+            <div class="card-header">
+                <h3 class="card-title"><i class="fas fa-info-circle"></i> Informações Importantes</h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
                 </div>
             </div>
-        </div>
-
-        <div class="form-section">
-            <h3>Opções de Consulta</h3>
-            
-            <div class="checkbox-group">
-                <label class="checkbox-label">
-                    <input type="checkbox" name="incluir_cabecalho" checked>
-                    <span>Incluir Cabeçalho</span>
-                </label>
-
-                <label class="checkbox-label">
-                    <input type="checkbox" name="incluir_partes">
-                    <span>Incluir Partes</span>
-                </label>
-
-                <label class="checkbox-label">
-                    <input type="checkbox" name="incluir_enderecos">
-                    <span>Incluir Endereços</span>
-                </label>
-
-                <label class="checkbox-label">
-                    <input type="checkbox" name="incluir_movimentos" checked>
-                    <span>Incluir Movimentos</span>
-                </label>
-
-                <label class="checkbox-label">
-                    <input type="checkbox" name="incluir_documentos" checked>
-                    <span>Incluir Documentos</span>
-                </label>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li>O número do processo deve conter exatamente <strong>20 dígitos</strong></li>
+                    <li>Não é necessário incluir pontos ou traços no número do processo</li>
+                    <li>As datas são opcionais e servem para filtrar os resultados</li>
+                    <li>Marque as opções que deseja incluir na consulta</li>
+                    <li>Use o menu lateral para acessar o modo Debug e visualizar os XMLs SOAP</li>
+                </ul>
             </div>
         </div>
-
-        <div class="form-actions">
-            <button type="submit" class="btn btn-primary">
-                🔍 Consultar Processo
-            </button>
-            <button type="reset" class="btn btn-secondary">
-                🔄 Limpar
-            </button>
-        </div>
-    </form>
-</div>
-
-<div class="card info-card">
-    <h3>ℹ️ Informações</h3>
-    <ul>
-        <li>O número do processo deve conter exatamente <strong>20 dígitos</strong></li>
-        <li>Não é necessário incluir pontos ou traços no número do processo</li>
-        <li>As datas são opcionais e servem para filtrar os resultados</li>
-        <li>Marque as opções que deseja incluir na consulta</li>
-    </ul>
-</div>
-
-<div class="card">
-    <h3>🧪 Modo Debug</h3>
-    <p>Visualize os XMLs de requisição e resposta SOAP:</p>
-    <form method="POST" action="{{ url_for('debug_xml') }}">
-        <div class="form-group">
-            <input 
-                type="text" 
-                name="numero_processo" 
-                class="form-control"
-                placeholder="Número do processo (20 dígitos)"
-                maxlength="25"
-                required
-            >
-        </div>
-        <button type="submit" class="btn btn-secondary">
-            📄 Ver XML Debug
-        </button>
-    </form>
+    </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// Formatar número do processo enquanto digita
-document.getElementById('numero_processo').addEventListener('input', function(e) {
-    // Remove tudo que não é número
-    let value = e.target.value.replace(/\D/g, '');
-    e.target.value = value;
-});
-
-// Validação do formulário
-document.getElementById('consultaForm').addEventListener('submit', function(e) {
-    const numeroProcesso = document.getElementById('numero_processo').value.replace(/\D/g, '');
-    
-    if (numeroProcesso.length !== 20) {
-        e.preventDefault();
-        alert('O número do processo deve ter exatamente 20 dígitos!');
-        return false;
-    }
+$(document).ready(function() {
+    // Validação do formulário
+    $('#consultaForm').on('submit', function(e) {
+        const numeroProcesso = $('#numero_processo').val().replace(/\D/g, '');
+        
+        if (numeroProcesso.length !== 20) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro de Validação',
+                text: 'O número do processo deve ter exatamente 20 dígitos!',
+                confirmButtonColor: '#007bff'
+            });
+            return false;
+        }
+        
+        // Mostrar loading
+        Swal.fire({
+            title: 'Consultando...',
+            text: 'Aguarde enquanto buscamos as informações do processo',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+    });
 });
 </script>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 {% endblock %}

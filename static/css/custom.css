@@ -1,0 +1,241 @@
+/* Customizações adicionais para o AdminLTE */
+
+/* Timeline de movimentos */
+.movimento-timeline {
+    position: relative;
+    padding-left: 2rem;
+    margin-top: 1rem;
+}
+
+.movimento-timeline::before {
+    content: '';
+    position: absolute;
+    left: 0.5rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, #007bff, #6c757d);
+}
+
+.movimento-item {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.movimento-marker {
+    position: absolute;
+    left: -1.55rem;
+    top: 0.5rem;
+    width: 1rem;
+    height: 1rem;
+    background-color: #007bff;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+/* Animações suaves */
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.list-group-item {
+    transition: background-color 0.2s ease;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* Syntax highlighting */
+.json-string { 
+    color: #22863a; 
+    font-weight: 500;
+}
+
+.json-number { 
+    color: #005cc5; 
+}
+
+.json-boolean { 
+    color: #d73a49; 
+    font-weight: bold;
+}
+
+.json-null {
+    color: #6f42c1;
+    font-style: italic;
+}
+
+.xml-tag { 
+    color: #005cc5; 
+    font-weight: bold;
+}
+
+.xml-attr { 
+    color: #6f42c1; 
+}
+
+.xml-value { 
+    color: #22863a; 
+}
+
+/* Code blocks */
+.code-block {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: #212529;
+}
+
+.code-block::-webkit-scrollbar {
+    height: 8px;
+}
+
+.code-block::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.code-block::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.code-block::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Loading overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-spinner {
+    text-align: center;
+    color: white;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .movimento-timeline {
+        padding-left: 1.5rem;
+    }
+    
+    .movimento-marker {
+        left: -1.3rem;
+    }
+}
+
+/* Print styles */
+@media print {
+    .main-sidebar,
+    .main-header,
+    .main-footer,
+    .btn,
+    .card-tools {
+        display: none !important;
+    }
+    
+    .content-wrapper {
+        margin-left: 0 !important;
+    }
+    
+    .card {
+        box-shadow: none !important;
+        page-break-inside: avoid;
+    }
+}
+
+/* Custom badges */
+.badge-movimento {
+    background-color: #17a2b8;
+    color: white;
+    padding: 0.35rem 0.65rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+}
+
+/* Callout customizations */
+.callout {
+    border-left: 5px solid #e9ecef;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.callout-info {
+    border-left-color: #17a2b8;
+    background-color: #d1ecf1;
+}
+
+.callout-warning {
+    border-left-color: #ffc107;
+    background-color: #fff3cd;
+}
+
+.callout-danger {
+    border-left-color: #dc3545;
+    background-color: #f8d7da;
+}
+
+/* Documento item enhancements */
+.documento-item {
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.documento-item:hover {
+    border-left-color: #007bff;
+}
+
+/* Custom scrollbar for sidebar */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: #343a40;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #6c757d;
+    border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: #adb5bd;
+}

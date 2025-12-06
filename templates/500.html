@@ -3,10 +3,29 @@
 {% block title %}Erro Interno - 500{% endblock %}
 
 {% block content %}
-<div class="error-page">
-    <div class="error-code">500</div>
-    <h2>Erro Interno do Servidor</h2>
-    <p>Desculpe, ocorreu um erro inesperado. Tente novamente mais tarde.</p>
-    <a href="{{ url_for('index') }}" class="btn btn-primary">Voltar para Início</a>
-</div>
+<section class="content">
+    <div class="error-page">
+        <h2 class="headline text-danger"> 500</h2>
+
+        <div class="error-content">
+            <h3><i class="fas fa-exclamation-triangle text-danger"></i> Oops! Algo deu errado.</h3>
+
+            <p>
+                Encontramos um erro interno no servidor.
+                Nossos técnicos foram notificados e trabalharão para corrigir o problema.
+                Enquanto isso, você pode <a href="{{ url_for('index') }}">retornar ao início</a>.
+            </p>
+
+            <div class="alert alert-warning mt-3">
+                <h5><i class="icon fas fa-info"></i> Dica!</h5>
+                Se o problema persistir, tente:
+                <ul class="mb-0">
+                    <li>Recarregar a página</li>
+                    <li>Limpar o cache do navegador</li>
+                    <li>Entrar em contato com o suporte</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

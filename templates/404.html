@@ -3,10 +3,28 @@
 {% block title %}Página Não Encontrada - 404{% endblock %}
 
 {% block content %}
-<div class="error-page">
-    <div class="error-code">404</div>
-    <h2>Página Não Encontrada</h2>
-    <p>Desculpe, a página que você está procurando não existe.</p>
-    <a href="{{ url_for('index') }}" class="btn btn-primary">Voltar para Início</a>
-</div>
+<section class="content">
+    <div class="error-page">
+        <h2 class="headline text-warning"> 404</h2>
+
+        <div class="error-content">
+            <h3><i class="fas fa-exclamation-triangle text-warning"></i> Oops! Página não encontrada.</h3>
+
+            <p>
+                Não conseguimos encontrar a página que você estava procurando.
+                Enquanto isso, você pode <a href="{{ url_for('index') }}">retornar ao início</a> ou tentar usar o menu de navegação.
+            </p>
+
+            <form class="search-form" action="{{ url_for('index') }}">
+                <div class="input-group">
+                    <input type="text" name="q" class="form-control" placeholder="Buscar...">
+
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-warning"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
 {% endblock %}

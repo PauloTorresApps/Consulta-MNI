@@ -1,143 +1,100 @@
-// Função para fechar alertas automaticamente após 5 segundos
-document.addEventListener('DOMContentLoaded', function() {
-    const alerts = document.querySelectorAll('.alert');
+/**
+ * Sistema de Consulta SOAP - MNI
+ * JavaScript principal com suporte ao AdminLTE 4
+ */
+
+// Inicialização quando o documento estiver pronto
+$(document).ready(function() {
+    // Auto-dismiss alerts após 5 segundos
+    setTimeout(function() {
+        $('.alert').fadeOut('slow', function() {
+            $(this).remove();
+        });
+    }, 5000);
     
-    alerts.forEach(function(alert) {
+    // Formatação de número do processo em tempo real
+    $('#numero_processo, #debug_numero_processo').on('input', function() {
+        let value = $(this).val().replace(/\D/g, '');
+        
+        // Limitar a 20 dígitos
+        if (value.length > 20) {
+            value = value.substr(0, 20);
+        }
+        
+        $(this).val(value);
+    });
+    
+    // Prevenir múltiplos submits
+    $('form').on('submit', function() {
+        const $form = $(this);
+        const $submitBtn = $form.find('button[type="submit"]');
+        
+        if ($form.data('submitted') === true) {
+            return false;
+        }
+        
+        $form.data('submitted', true);
+        $submitBtn.prop('disabled', true).css('opacity', '0.6');
+        
+        // Re-habilitar após 5 segundos (caso de erro)
         setTimeout(function() {
-            alert.style.transition = 'opacity 0.5s';
-            alert.style.opacity = '0';
-            
-            setTimeout(function() {
-                alert.remove();
-            }, 500);
+            $form.data('submitted', false);
+            $submitBtn.prop('disabled', false).css('opacity', '1');
         }, 5000);
     });
 });
 
-// Formatação de número do processo
-function formatarNumeroProcesso(input) {
-    let value = input.value.replace(/\D/g, '');
+// Função para validar formulário de consulta
+function validarFormularioConsulta(form) {
+    const numeroProcesso = $(form).find('#numero_processo').val().replace(/\D/g, '');
     
-    // Limitar a 20 dígitos
-    if (value.length > 20) {
-        value = value.substr(0, 20);
+    if (!numeroProcesso) {
+        mostrarAlerta('Erro', 'Informe o número do processo', 'error');
+        return false;
     }
     
-    input.value = value;
-}
-
-// Validação de formulário
-function validarFormulario(form) {
-    const numeroProcesso = form.querySelector('#numero_processo');
-    
-    if (numeroProcesso) {
-        const numero = numeroProcesso.value.replace(/\D/g, '');
-        
-        if (numero.length !== 20) {
-            alert('O número do processo deve ter exatamente 20 dígitos!');
-            numeroProcesso.focus();
-            return false;
-        }
+    if (numeroProcesso.length !== 20) {
+        mostrarAlerta('Erro', 'O número do processo deve ter exatamente 20 dígitos', 'error');
+        return false;
     }
     
     return true;
 }
 
-// Adicionar listener para todos os formulários
-document.addEventListener('DOMContentLoaded', function() {
-    const forms = document.querySelectorAll('form');
-    
-    forms.forEach(function(form) {
-        form.addEventListener('submit', function(e) {
-            if (!validarFormulario(form)) {
-                e.preventDefault();
-            }
-        });
-    });
-});
-
-// Loading spinner durante requisições
-function mostrarLoading() {
-    const loading = document.createElement('div');
-    loading.id = 'loading-overlay';
-    loading.innerHTML = `
-        <div class="loading-spinner">
-            <div class="spinner"></div>
-            <p>Consultando processo...</p>
-        </div>
-    `;
-    
-    // Adicionar estilos
-    const style = document.createElement('style');
-    style.textContent = `
-        #loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-        
-        .loading-spinner {
-            text-align: center;
-            color: white;
-        }
-        
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-    `;
-    
-    document.head.appendChild(style);
-    document.body.appendChild(loading);
-}
-
-function esconderLoading() {
-    const loading = document.getElementById('loading-overlay');
-    if (loading) {
-        loading.remove();
-    }
-}
-
-// Adicionar loading aos formulários
-document.addEventListener('DOMContentLoaded', function() {
-    const consultaForms = document.querySelectorAll('form[action*="consultar"]');
-    
-    consultaForms.forEach(function(form) {
-        form.addEventListener('submit', function(e) {
-            if (validarFormulario(form)) {
-                mostrarLoading();
-            }
-        });
-    });
-});
-
-// Função para fazer scroll suave
-function scrollSuave(elemento) {
-    elemento.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
+// Função para mostrar alertas usando SweetAlert2
+function mostrarAlerta(titulo, texto, icone = 'info') {
+    Swal.fire({
+        icon: icone,
+        title: titulo,
+        text: texto,
+        confirmButtonColor: '#007bff'
     });
 }
 
-// Copiar texto para área de transferência
+// Função para mostrar toast de sucesso
+function mostrarToast(mensagem, tipo = 'success') {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+        }
+    });
+    
+    Toast.fire({
+        icon: tipo,
+        title: mensagem
+    });
+}
+
+// Função para copiar texto para área de transferência
 function copiarTexto(texto) {
     return navigator.clipboard.writeText(texto).then(function() {
+        mostrarToast('Copiado para área de transferência!', 'success');
         return true;
     }).catch(function() {
         // Fallback para navegadores antigos
@@ -149,106 +106,104 @@ function copiarTexto(texto) {
         textarea.select();
         const sucesso = document.execCommand('copy');
         document.body.removeChild(textarea);
+        
+        if (sucesso) {
+            mostrarToast('Copiado para área de transferência!', 'success');
+        }
+        
         return sucesso;
     });
 }
 
-// Mostrar notificação toast
-function mostrarToast(mensagem, tipo = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${tipo}`;
-    toast.textContent = mensagem;
-    
-    const style = document.createElement('style');
-    style.textContent = `
-        .toast {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            padding: 1rem 1.5rem;
-            background-color: #1e293b;
-            color: white;
-            border-radius: 0.375rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-            z-index: 9999;
-            animation: slideIn 0.3s ease-out;
-        }
-        
-        .toast-success {
-            background-color: #10b981;
-        }
-        
-        .toast-error {
-            background-color: #ef4444;
-        }
-        
-        .toast-warning {
-            background-color: #f59e0b;
-        }
-        
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes slideOut {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-        }
-    `;
-    
-    if (!document.querySelector('style[data-toast]')) {
-        style.setAttribute('data-toast', 'true');
-        document.head.appendChild(style);
+// Função para scroll suave
+function scrollSuave(elemento) {
+    if (typeof elemento === 'string') {
+        elemento = document.querySelector(elemento);
     }
     
-    document.body.appendChild(toast);
-    
-    setTimeout(function() {
-        toast.style.animation = 'slideOut 0.3s ease-out';
-        setTimeout(function() {
-            toast.remove();
-        }, 300);
-    }, 3000);
+    if (elemento) {
+        elemento.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
 }
 
-// Prevenir múltiplos submits
-document.addEventListener('DOMContentLoaded', function() {
-    const forms = document.querySelectorAll('form');
-    
-    forms.forEach(function(form) {
-        let submitted = false;
-        
-        form.addEventListener('submit', function(e) {
-            if (submitted) {
-                e.preventDefault();
-                return false;
-            }
-            
-            const submitButtons = form.querySelectorAll('button[type="submit"]');
-            submitButtons.forEach(function(btn) {
-                btn.disabled = true;
-                btn.style.opacity = '0.6';
-            });
-            
-            submitted = true;
-        });
+// Função para mostrar loading overlay
+function mostrarLoading(mensagem = 'Carregando...') {
+    Swal.fire({
+        title: mensagem,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
     });
-});
+}
+
+// Função para esconder loading
+function esconderLoading() {
+    Swal.close();
+}
+
+// Função para formatar número do processo (adicionar máscara)
+function formatarNumeroProcesso(numero) {
+    // Remove tudo que não é dígito
+    numero = numero.replace(/\D/g, '');
+    
+    // Formata: NNNNNNN-DD.AAAA.J.TR.OOOO
+    if (numero.length === 20) {
+        return numero.replace(
+            /(\d{7})(\d{2})(\d{4})(\d{1})(\d{2})(\d{4})/,
+            '$1-$2.$3.$4.$5.$6'
+        );
+    }
+    
+    return numero;
+}
+
+// Função para validar data
+function validarData(data) {
+    if (!data) return true;
+    
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!regex.test(data)) return false;
+    
+    const dataObj = new Date(data);
+    return dataObj instanceof Date && !isNaN(dataObj);
+}
+
+// Função para exportar dados como JSON
+function exportarJSON(dados, nomeArquivo = 'dados.json') {
+    const json = JSON.stringify(dados, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = nomeArquivo;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    mostrarToast('Arquivo JSON exportado com sucesso!', 'success');
+}
+
+// Função para imprimir página
+function imprimirPagina() {
+    window.print();
+}
+
+// Debugging helper
+function debugLog(mensagem, dados) {
+    if (console && console.log) {
+        console.log(`[Debug] ${mensagem}`, dados || '');
+    }
+}
 
 // Console easter egg
-console.log('%c⚖️ Sistema de Consulta SOAP - MNI', 'font-size: 20px; font-weight: bold; color: #2563eb;');
-console.log('%cDesenvolvido com Python + Flask', 'font-size: 14px; color: #64748b;');
-console.log('%c\nPara mais informações, visite /sobre', 'font-size: 12px; color: #10b981;');
+console.log('%c⚖️ Sistema de Consulta SOAP - MNI', 'font-size: 20px; font-weight: bold; color: #007bff;');
+console.log('%c🚀 Desenvolvido com Python + Flask + AdminLTE 4', 'font-size: 14px; color: #6c757d;');
+console.log('%c📚 Para mais informações, visite /sobre', 'font-size: 12px; color: #28a745;');
+console.log('%c💡 Dica: Use o modo Debug XML para visualizar as requisições SOAP', 'font-size: 11px; color: #17a2b8;');

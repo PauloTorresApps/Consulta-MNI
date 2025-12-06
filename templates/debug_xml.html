@@ -2,61 +2,133 @@
 
 {% block title %}Debug XML - Processo {{ numero_processo }}{% endblock %}
 
-{% block content %}
-<div class="page-header">
-    <h2>Debug XML SOAP</h2>
-    <p class="subtitle">Processo: {{ numero_processo }}</p>
+{% block page_header %}
+<div class="row mb-2">
+    <div class="col-sm-6">
+        <h1 class="m-0">Debug XML SOAP</h1>
+    </div>
+    <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="breadcrumb-item active">Debug XML</li>
+        </ol>
+    </div>
 </div>
+{% endblock %}
 
-<div class="card">
-    <div class="result-actions">
-        <a href="{{ url_for('index') }}" class="btn btn-secondary">
-            ← Voltar
-        </a>
-        <button onclick="copiarXML('request')" class="btn btn-primary">
-            📋 Copiar Request
-        </button>
-        <button onclick="copiarXML('response')" class="btn btn-primary">
-            📋 Copiar Response
-        </button>
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-bug"></i> Processo: {{ numero_processo }}
+                </h3>
+                <div class="card-tools">
+                    <a href="{{ url_for('index') }}" class="btn btn-tool">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="btn-group mb-3" role="group">
+                    <button type="button" class="btn btn-primary" onclick="copiarXML('request')">
+                        <i class="fas fa-copy"></i> Copiar Request
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="copiarXML('response')">
+                        <i class="fas fa-copy"></i> Copiar Response
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 {% if xml_data.request_xml %}
-<div class="card">
-    <h3>📤 Request XML (Envelope SOAP Enviado)</h3>
-    <div class="xml-container">
-        <pre id="requestXML" class="xml-content">{{ xml_data.request_xml }}</pre>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-success">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-upload"></i> Request XML (Envelope SOAP Enviado)
+                </h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="maximize">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <pre id="requestXML" class="code-block m-0" style="max-height: 500px; overflow: auto;">{{ xml_data.request_xml }}</pre>
+            </div>
+        </div>
     </div>
 </div>
 {% endif %}
 
 {% if xml_data.response_xml %}
-<div class="card">
-    <h3>📥 Response XML (Envelope SOAP Recebido)</h3>
-    <div class="xml-container">
-        <pre id="responseXML" class="xml-content">{{ xml_data.response_xml }}</pre>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-info">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-download"></i> Response XML (Envelope SOAP Recebido)
+                </h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="maximize">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <pre id="responseXML" class="code-block m-0" style="max-height: 500px; overflow: auto;">{{ xml_data.response_xml }}</pre>
+            </div>
+        </div>
     </div>
 </div>
 {% endif %}
 
 {% if xml_data.error %}
-<div class="card">
-    <h3>❌ Erro</h3>
-    <div class="alert alert-error">
-        {{ xml_data.error }}
+<div class="row">
+    <div class="col-md-12">
+        <div class="alert alert-danger alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <h5><i class="icon fas fa-ban"></i> Erro!</h5>
+            {{ xml_data.error }}
+        </div>
     </div>
 </div>
 {% endif %}
 
-<div class="card info-card">
-    <h3>ℹ️ Sobre o Debug XML</h3>
-    <ul>
-        <li>O <strong>Request XML</strong> mostra o envelope SOAP enviado ao serviço</li>
-        <li>O <strong>Response XML</strong> mostra o envelope SOAP recebido como resposta</li>
-        <li>Use este modo para debugar problemas de comunicação ou validar a estrutura SOAP</li>
-        <li>Você pode copiar os XMLs para análise em ferramentas externas</li>
-    </ul>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-warning">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="fas fa-info-circle"></i> Sobre o Debug XML
+                </h3>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li>O <strong>Request XML</strong> mostra o envelope SOAP enviado ao serviço</li>
+                    <li>O <strong>Response XML</strong> mostra o envelope SOAP recebido como resposta</li>
+                    <li>Use este modo para debugar problemas de comunicação ou validar a estrutura SOAP</li>
+                    <li>Você pode copiar os XMLs para análise em ferramentas externas</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
@@ -68,14 +140,24 @@ function copiarXML(tipo) {
     const element = document.getElementById(elementId);
     
     if (!element) {
-        alert('XML não encontrado!');
+        Swal.fire({
+            icon: 'error',
+            title: 'Erro',
+            text: 'XML não encontrado!',
+        });
         return;
     }
     
     const texto = element.textContent;
     
     navigator.clipboard.writeText(texto).then(function() {
-        alert('XML copiado para área de transferência!');
+        Swal.fire({
+            icon: 'success',
+            title: 'Copiado!',
+            text: 'XML copiado para área de transferência',
+            timer: 2000,
+            showConfirmButton: false
+        });
     }, function(err) {
         // Fallback para navegadores antigos
         const textarea = document.createElement('textarea');
@@ -86,16 +168,21 @@ function copiarXML(tipo) {
         textarea.select();
         document.execCommand('copy');
         document.body.removeChild(textarea);
-        alert('XML copiado para área de transferência!');
+        
+        Swal.fire({
+            icon: 'success',
+            title: 'Copiado!',
+            text: 'XML copiado para área de transferência',
+            timer: 2000,
+            showConfirmButton: false
+        });
     });
 }
 
 // Syntax highlighting básico para XML
-document.addEventListener('DOMContentLoaded', function() {
-    const xmlElements = document.querySelectorAll('.xml-content');
-    
-    xmlElements.forEach(function(element) {
-        let xml = element.textContent;
+$(document).ready(function() {
+    $('.code-block').each(function() {
+        let xml = $(this).text();
         
         // Destacar tags
         xml = xml.replace(/(&lt;\/?)(\w+)(.*?)(&gt;)/g, function(match, p1, p2, p3, p4) {
@@ -107,8 +194,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Destacar valores de atributos
         xml = xml.replace(/="(.*?)"/g, '="<span class="xml-value">$1</span>"');
         
-        element.innerHTML = xml;
+        $(this).html(xml);
     });
 });
 </script>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 {% endblock %}
