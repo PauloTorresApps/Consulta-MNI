@@ -272,43 +272,49 @@ def download_documento():
 @app.route('/api/download-documento', methods=['POST'])
 def api_download_documento():
     """API endpoint para baixar documento (retorna base64)"""
+    import base64
+    
     try:
-        # Obter dados do JSON
         data = request.get_json()
         
         if not data:
-            return jsonify({'error': 'Dados não fornecidos'}), 400
+            return jsonify({'error': 'Dados não fornecidos', 'success': False}), 400
         
         numero_processo = data.get('numero_processo', '').strip()
         id_documento = data.get('id_documento', '').strip()
         
         if not numero_processo or not id_documento:
-            return jsonify({'error': 'Número do processo e ID do documento são obrigatórios'}), 400
+            return jsonify({'error': 'Parâmetros obrigatórios', 'success': False}), 400
         
-        # Remover caracteres especiais
         numero_processo = ''.join(filter(str.isdigit, numero_processo))
         
-        # Criar serviço e consultar documento
         soap_service = get_soap_service()
-        
         resultado = soap_service.consultar_documentos_processo(
             numero_processo=numero_processo,
             ids_documentos=id_documento
         )
         
-        if not resultado.get('sucesso'):
-            return jsonify({
-                'error': resultado.get('erro', 'Erro desconhecido'),
-                'success': False
-            }), 500
+        if not isinstance(resultado, dict) or not resultado.get('sucesso'):
+            erro = resultado.get('erro', 'Erro desconhecido') if isinstance(resultado, dict) else str(resultado)
+            return jsonify({'error': erro, 'success': False}), 500
         
-        return jsonify({
-            'success': True,
-            'data': resultado
-        })
+        # CONVERSÃO CRÍTICA: bytes -> base64 string
+        documentos = resultado.get('documentos', [])
+        for doc in documentos:
+            # Remover campo bytes
+            if 'conteudo' in doc and isinstance(doc['conteudo'], bytes):
+                doc['conteudo_base64'] = base64.b64encode(doc['conteudo']).decode('utf-8')
+                del doc['conteudo']  # Remover bytes não serializável
+            
+            # Se conteudo_base64 já existir mas conteudo for bytes, remover conteudo
+            elif 'conteudo' in doc:
+                del doc['conteudo']
+        
+        return jsonify({'success': True, 'data': resultado})
         
     except Exception as e:
-        return jsonify({'error': f'Erro ao baixar documento: {str(e)}'}), 500
+        logger.error(f"Erro: {str(e)}", exc_info=True)
+        return jsonify({'error': str(e), 'success': False}), 500
 
 
 @app.errorhandler(404)
