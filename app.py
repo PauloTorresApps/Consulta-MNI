@@ -1,9 +1,15 @@
 import os
+import logging
 from flask import Flask, render_template, request, jsonify, flash, redirect, url_for
 from dotenv import load_dotenv
 from soap_service import SOAPService
 import json
 from datetime import datetime
+
+
+# Configurar logging para o app
+logging.basicConfig(level=logging.INFO) # <--- ADICIONAR ESTA LINHA
+logger = logging.getLogger(__name__)    # <--- ADICIONAR ESTA L
 
 # Carregar variáveis de ambiente
 load_dotenv()
@@ -179,6 +185,8 @@ def sobre():
 
 @app.route('/download-documento', methods=['POST'])
 def download_documento():
+    
+    logger.info(f"Iniciando download de documento################################################################")
     """Endpoint para baixar documento do processo"""
     try:
         # Obter dados do POST
