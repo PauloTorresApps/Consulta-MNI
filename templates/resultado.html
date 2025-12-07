@@ -3,20 +3,31 @@
 {% block title %}Processo {{ numero_processo }}{% endblock %}
 
 {% block content %}
-{# Seção de Movimentos com Documentos Vinculados #}
+<div class="page-header d-print-none mt-4">
+    <div class="row g-2 align-items-center">
+        <div class="col">
+            <div class="page-pretitle">Resultado da Consulta</div>
+            <h2 class="page-title">Processo {{ numero_processo }}</h2>
+        </div>
+        <div class="col-auto ms-auto d-print-none">
+            <div class="btn-list">
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i class="ti ti-arrow-left icon"></i>
+                    Nova Consulta
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% if resultado.processo and resultado.processo.movimento %}
-<div class="card">
-    <h2 class="page-header">Processo {{ numero_processo }}</h2>
-    
-    <h3>📌 Movimentos com Documentos</h3>
-    
     {% if resultado.processo.movimento is mapping %}
         {% set movimentos = [resultado.processo.movimento] %}
     {% else %}
         {% set movimentos = resultado.processo.movimento %}
     {% endif %}
     
-    {# Criar dicionário de documentos para busca rápida #}
+    {# Criar dicionário de documentos #}
     {% set documentos_dict = {} %}
     {% if resultado.processo.documento %}
         {% if resultado.processo.documento is mapping %}
@@ -28,149 +39,213 @@
         {% endif %}
     {% endif %}
     
-    {# Filtrar apenas movimentos com documentos vinculados #}
+    {# Filtrar movimentos com documentos #}
     {% set movimentos_com_docs = [] %}
     {% for mov in movimentos %}
         {% if mov.idDocumentoVinculado %}
             {% set _ = movimentos_com_docs.append(mov) %}
         {% endif %}
     {% endfor %}
-    
-    {% if movimentos_com_docs %}
-    <div class="movimentos-container">
-        <div class="documentos-count">
-            <strong>Total de movimentos com documentos:</strong> {{ movimentos_com_docs|length }}
-        </div>
-        
-        <div class="documentos-lista">
-            {% for mov in movimentos_com_docs %}
-            <div class="documento-item movimento-expandido">
-                <div class="documento-header">
-                    <div class="movimento-info">
-                        {% if mov.idMovimento %}
-                            <div class="documento-field">
-                                <span class="field-label">Evento:</span>
-                                <span class="field-value movimento-id">{{ mov.idMovimento }} - </span>
-                                <span class="documento-badge">
-                                    <strong>
-                                    {% if mov.movimentoLocal and mov.movimentoLocal.descricao %}
-                                        {{ mov.movimentoLocal.descricao }}
-                                    {% elif mov.descricao %}
-                                        {{ mov.descricao }}
-                                    {% endif %}
-                                    </strong>
-                                </span>
-                            </div>
-                        {% endif %}
-                        
-                        {% if mov.tipoMovimento %}
-                            <div class="documento-field">
-                                <span class="field-label">Tipo:</span>
-                                <span class="field-value">{{ mov.tipoMovimento }}</span>
-                            </div>
-                        {% endif %}
-                    </div>
-                   
-                    <span class="documento-data">
-                        {% if mov.dataHora %}
-                            📅 {{ mov.dataHora }}
-                        {% endif %}
-                    </span>
-                </div>
-                
-                <div class="documento-body">
-                    {# Documentos Vinculados #}
-                    {% if mov.idDocumentoVinculado is string or mov.idDocumentoVinculado is number %}
-                        {% set docs_vinculados = [mov.idDocumentoVinculado] %}
-                    {% else %}
-                        {% set docs_vinculados = mov.idDocumentoVinculado %}
-                    {% endif %}
-                    
-                    <div class="documentos-vinculados">
-                        <div class="documentos-vinculados-lista">
-                            {% for id_doc in docs_vinculados %}
-                            {% set doc_info = documentos_dict.get(id_doc|string) %}
-                            <div class="documento-vinculado-item">
-                                <div class="documento-vinculado-info">
-                                    {% if doc_info %}
-                                        {# Buscar valor do rotulo em outroParametro (array) #}
-                                        {% set rotulo = namespace(valor='') %}
-                                        {% if doc_info.outroParametro %}
-                                            {% for param in doc_info.outroParametro %}
-                                                {% if param.nome == 'rotulo' %}
-                                                    {% set rotulo.valor = param.valor %}
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% endif %}
-                                        
-                                        {% if rotulo.valor %}
-                                        <div class="documento-vinculado-descricao">
-                                            📄 {{ rotulo.valor }}
-                                        </div>
-                                        {% elif doc_info.descricao %}
-                                        <div class="documento-vinculado-descricao">
-                                            📄 {{ doc_info.descricao }}
-                                        </div>
-                                        {% else %}
-                                        <div class="documento-vinculado-descricao">
-                                            📄 Documento
-                                        </div>
-                                        {% endif %}
-                                    {% else %}
-                                    <div class="documento-vinculado-descricao">
-                                        📄 Documento
-                                    </div>
-                                    {% endif %}
-                                </div>
-                                
-                                <div class="documento-vinculado-actions">
-                                    <form method="POST" action="{{ url_for('download_documento') }}" style="display: inline;">
-                                        <input type="hidden" name="numero_processo" value="{{ numero_processo }}">
-                                        <input type="hidden" name="id_documento" value="{{ id_doc }}">
-                                        <input type="hidden" name="id_movimento" value="{{ mov.idMovimento }}">
-                                        <input type="hidden" name="descricao_movimento" value="{{ mov.movimentoLocal.descricao if mov.movimentoLocal and mov.movimentoLocal.descricao else mov.descricao }}">
-                                        <button type="submit" class="btn btn-primary btn-sm">
-                                            📤 Enviar para Análise
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
+
+<div class="row row-cards mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="ti ti-timeline me-2"></i>
+                    Movimentos com Documentos
+                </h3>
+                <div class="card-actions">
+                    <span class="badge bg-blue">{{ movimentos_com_docs|length }} movimentos</span>
                 </div>
             </div>
-            {% endfor %}
+            
+            {% if movimentos_com_docs %}
+            <div class="card-body">
+                <div class="movimento-timeline">
+                    {% for mov in movimentos_com_docs %}
+                    <div class="movimento-item">
+                        <div class="movimento-marker"></div>
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <div class="row align-items-center">
+                                    <div class="col">
+                                        <h4 class="card-title mb-0">
+                                            {% if mov.movimentoLocal and mov.movimentoLocal.descricao %}
+                                                {{ mov.movimentoLocal.descricao }}
+                                            {% elif mov.descricao %}
+                                                {{ mov.descricao }}
+                                            {% else %}
+                                                Movimento
+                                            {% endif %}
+                                        </h4>
+                                        <div class="text-muted small mt-1">
+                                            <i class="ti ti-calendar icon"></i>
+                                            {% if mov.dataHora %}
+                                                {{ mov.dataHora }}
+                                            {% endif %}
+                                            {% if mov.tipoMovimento %}
+                                                <span class="ms-2">
+                                                    <i class="ti ti-tag icon"></i>
+                                                    {{ mov.tipoMovimento }}
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <span class="badge bg-blue-lt">ID: {{ mov.idMovimento }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-body">
+                                <h5 class="mb-3">
+                                    <i class="ti ti-file-text me-2"></i>
+                                    Documentos Vinculados
+                                </h5>
+                                
+                                {% if mov.idDocumentoVinculado is string or mov.idDocumentoVinculado is number %}
+                                    {% set docs_vinculados = [mov.idDocumentoVinculado] %}
+                                {% else %}
+                                    {% set docs_vinculados = mov.idDocumentoVinculado %}
+                                {% endif %}
+                                
+                                <div class="list-group list-group-flush">
+                                    {% for id_doc in docs_vinculados %}
+                                    {% set doc_info = documentos_dict.get(id_doc|string) %}
+                                    <div class="list-group-item documento-vinculado">
+                                        <div class="row align-items-center">
+                                            <div class="col">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="ti ti-file-text text-blue me-2"></i>
+                                                    <div>
+                                                        {% if doc_info %}
+                                                            {# Buscar rótulo #}
+                                                            {% set rotulo = namespace(valor='') %}
+                                                            {% if doc_info.outroParametro %}
+                                                                {% for param in doc_info.outroParametro %}
+                                                                    {% if param.nome == 'rotulo' %}
+                                                                        {% set rotulo.valor = param.valor %}
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                            
+                                                            <div class="fw-bold">
+                                                                {% if rotulo.valor %}
+                                                                    {{ rotulo.valor }}
+                                                                {% elif doc_info.descricao %}
+                                                                    {{ doc_info.descricao }}
+                                                                {% else %}
+                                                                    Documento
+                                                                {% endif %}
+                                                            </div>
+                                                            <div class="text-muted small badge-id">
+                                                                {{ id_doc }}
+                                                            </div>
+                                                        {% else %}
+                                                            <div class="fw-bold">Documento</div>
+                                                            <div class="text-muted small badge-id">
+                                                                {{ id_doc }}
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-auto">
+                                                <form method="POST" action="{{ url_for('download_documento') }}" style="display: inline;">
+                                                    <input type="hidden" name="numero_processo" value="{{ numero_processo }}">
+                                                    <input type="hidden" name="id_documento" value="{{ id_doc }}">
+                                                    <input type="hidden" name="id_movimento" value="{{ mov.idMovimento }}">
+                                                    <input type="hidden" name="descricao_movimento" value="{{ mov.movimentoLocal.descricao if mov.movimentoLocal and mov.movimentoLocal.descricao else mov.descricao }}">
+                                                    <button type="submit" class="btn btn-primary btn-sm">
+                                                        <i class="ti ti-download icon"></i>
+                                                        Enviar para Análise
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <div class="card-body">
+                <div class="empty">
+                    <div class="empty-icon">
+                        <i class="ti ti-file-off"></i>
+                    </div>
+                    <p class="empty-title">Nenhum movimento com documentos</p>
+                    <p class="empty-subtitle text-muted">
+                        Não foram encontrados movimentos com documentos vinculados neste processo.
+                    </p>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
-    {% else %}
-    <div class="info-message">
-        📭 Nenhum movimento com documentos vinculados encontrado.
-    </div>
-    {% endif %}
 </div>
 {% endif %}
 
-{# Dados JSON Brutos #}
-<div class="card">
-    <h3>📊 Dados Completos (JSON)</h3>
-    
-    <div class="result-data">
-        <pre id="resultadoJSON">{{ resultado | tojson(indent=2) }}</pre>
+<div class="row row-cards mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="ti ti-code me-2"></i>
+                    Dados Completos (JSON)
+                </h3>
+                <div class="card-actions">
+                    <button class="btn btn-sm btn-primary" onclick="copyJSON()">
+                        <i class="ti ti-copy icon"></i>
+                        Copiar
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <pre class="json-viewer" id="jsonData">{{ resultado | tojson(indent=2) }}</pre>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// Syntax highlighting simples para JSON
+function copyJSON() {
+    const jsonData = document.getElementById('jsonData').textContent;
+    navigator.clipboard.writeText(jsonData).then(function() {
+        const toast = document.createElement('div');
+        toast.className = 'toast show position-fixed bottom-0 end-0 m-3';
+        toast.innerHTML = `
+            <div class="toast-header bg-success text-white">
+                <i class="ti ti-check me-2"></i>
+                <strong class="me-auto">Sucesso</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                JSON copiado para área de transferência!
+            </div>
+        `;
+        document.body.appendChild(toast);
+        
+        setTimeout(function() {
+            toast.remove();
+        }, 3000);
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    const pre = document.getElementById('resultadoJSON');
+    const pre = document.getElementById('jsonData');
     if (pre) {
         let json = pre.textContent;
-        json = json.replace(/(".*?")/g, '<span class="json-string">$1</span>');
-        json = json.replace(/(\d+)/g, '<span class="json-number">$1</span>');
-        json = json.replace(/(true|false|null)/g, '<span class="json-boolean">$1</span>');
+        json = json.replace(/(".*?")/g, '<span style="color: #a5d6ff;">$1</span>');
+        json = json.replace(/(\d+)/g, '<span style="color: #79c0ff;">$1</span>');
+        json = json.replace(/(true|false|null)/g, '<span style="color: #ffa657;">$1</span>');
         pre.innerHTML = json;
     }
 });

@@ -3,108 +3,246 @@
 {% block title %}Sobre - Sistema SOAP MNI{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h2>Sobre o Sistema</h2>
-    <p class="subtitle">Sistema de Consulta SOAP para MNI</p>
-</div>
-
-<div class="card">
-    <h3>📋 Descrição</h3>
-    <p>
-        Este sistema foi desenvolvido para facilitar a consulta de processos judiciais através do 
-        <strong>MNI (Modelo Nacional de Interoperabilidade)</strong>, utilizando requisições SOAP/WSDL.
-    </p>
-    <p>
-        O MNI é um padrão desenvolvido pelo CNJ (Conselho Nacional de Justiça) para permitir a 
-        comunicação entre diferentes sistemas judiciais no Brasil.
-    </p>
-</div>
-
-<div class="card">
-    <h3>🛠️ Tecnologias Utilizadas</h3>
-    <ul class="tech-list">
-        <li><strong>Python 3</strong> - Linguagem de programação principal</li>
-        <li><strong>Flask</strong> - Framework web minimalista e poderoso</li>
-        <li><strong>Zeep</strong> - Biblioteca para comunicação SOAP/WSDL</li>
-        <li><strong>LXML</strong> - Processamento de XML</li>
-        <li><strong>HTML5 + CSS3</strong> - Interface web moderna e responsiva</li>
-        <li><strong>JavaScript</strong> - Interatividade no frontend</li>
-    </ul>
-</div>
-
-<div class="card">
-    <h3>✨ Funcionalidades</h3>
-    <ul class="feature-list">
-        <li>✅ Consulta de processos através do número CNJ</li>
-        <li>✅ Filtros por data inicial e final</li>
-        <li>✅ Opções configuráveis de inclusão de dados (cabeçalho, partes, movimentos, etc.)</li>
-        <li>✅ Visualização formatada dos resultados</li>
-        <li>✅ Exportação dos dados em formato JSON</li>
-        <li>✅ Modo debug para visualização de XMLs SOAP</li>
-        <li>✅ API REST para integração com outros sistemas</li>
-        <li>✅ Interface responsiva e intuitiva</li>
-    </ul>
-</div>
-
-<div class="card">
-    <h3>📡 API REST</h3>
-    <p>O sistema também disponibiliza uma API REST para consultas programáticas:</p>
-    
-    <div class="api-doc">
-        <h4>POST /api/consultar</h4>
-        <p><strong>Content-Type:</strong> application/json</p>
-        
-        <p><strong>Exemplo de requisição:</strong></p>
-        <pre class="code-block">{
-  "numero_processo": "00058128320258272729",
-  "data_inicial": "2024-01-01",
-  "data_final": "2024-12-31",
-  "incluir_cabecalho": true,
-  "incluir_partes": false,
-  "incluir_enderecos": false,
-  "incluir_movimentos": true,
-  "incluir_documentos": true
-}</pre>
-
-        <p><strong>Exemplo de resposta (sucesso):</strong></p>
-        <pre class="code-block">{
-  "success": true,
-  "data": {
-    // Dados do processo
-  }
-}</pre>
-
-        <p><strong>Exemplo de resposta (erro):</strong></p>
-        <pre class="code-block">{
-  "error": "Mensagem de erro"
-}</pre>
+<div class="page-header d-print-none mt-4">
+    <div class="row g-2 align-items-center">
+        <div class="col">
+            <h2 class="page-title">
+                <i class="ti ti-info-circle me-2"></i>
+                Sobre o Sistema
+            </h2>
+            <div class="text-muted mt-1">
+                Sistema de Consulta SOAP para MNI
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="card">
-    <h3>🔒 Segurança</h3>
-    <ul>
-        <li>Credenciais de acesso armazenadas em variáveis de ambiente</li>
-        <li>Validação de dados de entrada</li>
-        <li>Tratamento de erros e exceções</li>
-        <li>Logs de auditoria para todas as requisições</li>
-    </ul>
-</div>
+<div class="row row-cards mt-3">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-status-top bg-blue"></div>
+            <div class="card-body">
+                <h3 class="card-title">Descrição</h3>
+                <p>
+                    Sistema desenvolvido para facilitar consultas de processos judiciais através do 
+                    <strong>MNI (Modelo Nacional de Interoperabilidade)</strong>, utilizando SOAP/WSDL.
+                </p>
+                <p class="mb-0">
+                    O MNI é um padrão do CNJ para comunicação entre sistemas judiciais no Brasil.
+                </p>
+            </div>
+        </div>
 
-<div class="card">
-    <h3>📞 Suporte</h3>
-    <p>
-        Para dúvidas, sugestões ou relatar problemas, entre em contato através dos canais oficiais
-        ou verifique a documentação técnica do projeto.
-    </p>
-</div>
+        <div class="card mt-3">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="ti ti-code me-2"></i>
+                    Tecnologias
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <span class="badge bg-python me-2">Python 3</span>
+                            <span class="text-muted">Linguagem principal</span>
+                        </div>
+                        <div class="mb-3">
+                            <span class="badge bg-green me-2">Flask</span>
+                            <span class="text-muted">Framework web</span>
+                        </div>
+                        <div class="mb-3">
+                            <span class="badge bg-blue me-2">Zeep</span>
+                            <span class="text-muted">Cliente SOAP/WSDL</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <span class="badge bg-orange me-2">LXML</span>
+                            <span class="text-muted">Processamento XML</span>
+                        </div>
+                        <div class="mb-3">
+                            <span class="badge bg-purple me-2">Tabler</span>
+                            <span class="text-muted">Interface UI</span>
+                        </div>
+                        <div class="mb-3">
+                            <span class="badge bg-yellow me-2">JavaScript</span>
+                            <span class="text-muted">Frontend interativo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<div class="card info-card">
-    <h3>⚖️ Aviso Legal</h3>
-    <p>
-        Este sistema é uma ferramenta de consulta e não substitui o acesso oficial aos sistemas
-        do Poder Judiciário. Use-o apenas se você tiver autorização e credenciais válidas para
-        acessar o serviço MNI.
-    </p>
+        <div class="card mt-3">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="ti ti-api me-2"></i>
+                    API REST
+                </h3>
+            </div>
+            <div class="card-body">
+                <h4>POST /api/consultar</h4>
+                <p class="text-muted">Endpoint para consultas programáticas</p>
+                
+                <div class="mb-3">
+                    <strong>Exemplo de requisição:</strong>
+                    <pre class="bg-dark text-white p-3 rounded mt-2" style="font-size: 0.875rem;">{
+  "numero_processo": "00058128320258272729",
+  "incluir_movimentos": true,
+  "incluir_documentos": true
+}</pre>
+                </div>
+
+                <div>
+                    <strong>Resposta de sucesso:</strong>
+                    <pre class="bg-dark text-white p-3 rounded mt-2" style="font-size: 0.875rem;">{
+  "success": true,
+  "data": { /* dados do processo */ }
+}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-status-top bg-green"></div>
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="ti ti-checkbox me-2"></i>
+                    Funcionalidades
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <i class="ti ti-check text-green"></i>
+                            </div>
+                            <div class="col">
+                                Consulta por número CNJ
+                            </div>
+                        </div>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <i class="ti ti-check text-green"></i>
+                            </div>
+                            <div class="col">
+                                Filtros por data
+                            </div>
+                        </div>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <i class="ti ti-check text-green"></i>
+                            </div>
+                            <div class="col">
+                                Opções configuráveis
+                            </div>
+                        </div>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <i class="ti ti-check text-green"></i>
+                            </div>
+                            <div class="col">
+                                Visualização organizada
+                            </div>
+                        </div>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <i class="ti ti-check text-green"></i>
+                            </div>
+                            <div class="col">
+                                Exportação JSON
+                            </div>
+                        </div>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <i class="ti ti-check text-green"></i>
+                            </div>
+                            <div class="col">
+                                Debug XML SOAP
+                            </div>
+                        </div>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <i class="ti ti-check text-green"></i>
+                            </div>
+                            <div class="col">
+                                API REST integrada
+                            </div>
+                        </div>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <i class="ti ti-check text-green"></i>
+                            </div>
+                            <div class="col">
+                                Interface responsiva
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-status-top bg-red"></div>
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="ti ti-shield-lock me-2"></i>
+                    Segurança
+                </h3>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <i class="ti ti-check text-green me-2"></i>
+                        Credenciais em variáveis de ambiente
+                    </li>
+                    <li class="mb-2">
+                        <i class="ti ti-check text-green me-2"></i>
+                        Validação de dados de entrada
+                    </li>
+                    <li class="mb-2">
+                        <i class="ti ti-check text-green me-2"></i>
+                        Tratamento de erros
+                    </li>
+                    <li class="mb-2">
+                        <i class="ti ti-check text-green me-2"></i>
+                        Logs de auditoria
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-status-top bg-yellow"></div>
+            <div class="card-body">
+                <h3 class="card-title">
+                    <i class="ti ti-alert-triangle me-2"></i>
+                    Aviso Legal
+                </h3>
+                <p class="text-muted small mb-0">
+                    Esta é uma ferramenta de consulta auxiliar. Não substitui o acesso oficial aos 
+                    sistemas do Poder Judiciário. Use apenas com autorização e credenciais válidas.
+                </p>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

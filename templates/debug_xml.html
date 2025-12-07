@@ -3,67 +3,120 @@
 {% block title %}Debug XML - Processo {{ numero_processo }}{% endblock %}
 
 {% block content %}
-<div class="page-header">
-    <h2>Debug XML SOAP</h2>
-    <p class="subtitle">Processo: {{ numero_processo }}</p>
-</div>
-
-<div class="card">
-    <div class="result-actions">
-        <a href="{{ url_for('index') }}" class="btn btn-secondary">
-            ← Voltar
-        </a>
-        <button onclick="copiarXML('request')" class="btn btn-primary">
-            📋 Copiar Request
-        </button>
-        <button onclick="copiarXML('response')" class="btn btn-primary">
-            📋 Copiar Response
-        </button>
+<div class="page-header d-print-none mt-4">
+    <div class="row g-2 align-items-center">
+        <div class="col">
+            <div class="page-pretitle">Debug SOAP</div>
+            <h2 class="page-title">Processo {{ numero_processo }}</h2>
+        </div>
+        <div class="col-auto ms-auto d-print-none">
+            <div class="btn-list">
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i class="ti ti-arrow-left icon"></i>
+                    Voltar
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
 {% if xml_data.request_xml %}
-<div class="card">
-    <h3>📤 Request XML (Envelope SOAP Enviado)</h3>
-    <div class="xml-container">
-        <pre id="requestXML" class="xml-content">{{ xml_data.request_xml }}</pre>
+<div class="row row-cards mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-status-top bg-green"></div>
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="ti ti-arrow-up-circle me-2"></i>
+                    Request XML (Envelope SOAP Enviado)
+                </h3>
+                <div class="card-actions">
+                    <button class="btn btn-sm btn-primary" onclick="copyXML('request')">
+                        <i class="ti ti-copy icon"></i>
+                        Copiar
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <pre id="requestXML" class="bg-dark text-white p-3 rounded" style="font-size: 0.875rem; overflow-x: auto;">{{ xml_data.request_xml }}</pre>
+            </div>
+        </div>
     </div>
 </div>
 {% endif %}
 
 {% if xml_data.response_xml %}
-<div class="card">
-    <h3>📥 Response XML (Envelope SOAP Recebido)</h3>
-    <div class="xml-container">
-        <pre id="responseXML" class="xml-content">{{ xml_data.response_xml }}</pre>
+<div class="row row-cards mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-status-top bg-blue"></div>
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="ti ti-arrow-down-circle me-2"></i>
+                    Response XML (Envelope SOAP Recebido)
+                </h3>
+                <div class="card-actions">
+                    <button class="btn btn-sm btn-primary" onclick="copyXML('response')">
+                        <i class="ti ti-copy icon"></i>
+                        Copiar
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <pre id="responseXML" class="bg-dark text-white p-3 rounded" style="font-size: 0.875rem; overflow-x: auto;">{{ xml_data.response_xml }}</pre>
+            </div>
+        </div>
     </div>
 </div>
 {% endif %}
 
 {% if xml_data.error %}
-<div class="card">
-    <h3>❌ Erro</h3>
-    <div class="alert alert-error">
-        {{ xml_data.error }}
+<div class="row row-cards mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-status-top bg-red"></div>
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="ti ti-alert-circle me-2"></i>
+                    Erro
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-danger mb-0">
+                    {{ xml_data.error }}
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endif %}
 
-<div class="card info-card">
-    <h3>ℹ️ Sobre o Debug XML</h3>
-    <ul>
-        <li>O <strong>Request XML</strong> mostra o envelope SOAP enviado ao serviço</li>
-        <li>O <strong>Response XML</strong> mostra o envelope SOAP recebido como resposta</li>
-        <li>Use este modo para debugar problemas de comunicação ou validar a estrutura SOAP</li>
-        <li>Você pode copiar os XMLs para análise em ferramentas externas</li>
-    </ul>
+<div class="row row-cards mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-status-top bg-purple"></div>
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="ti ti-info-circle me-2"></i>
+                    Sobre o Debug XML
+                </h3>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li>O <strong>Request XML</strong> mostra o envelope SOAP enviado ao serviço</li>
+                    <li>O <strong>Response XML</strong> mostra o envelope SOAP recebido como resposta</li>
+                    <li>Use este modo para debugar problemas de comunicação ou validar a estrutura SOAP</li>
+                    <li>Você pode copiar os XMLs para análise em ferramentas externas</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// Função para copiar XML para área de transferência
-function copiarXML(tipo) {
+function copyXML(tipo) {
     const elementId = tipo === 'request' ? 'requestXML' : 'responseXML';
     const element = document.getElementById(elementId);
     
@@ -75,40 +128,3 @@ function copiarXML(tipo) {
     const texto = element.textContent;
     
     navigator.clipboard.writeText(texto).then(function() {
-        alert('XML copiado para área de transferência!');
-    }, function(err) {
-        // Fallback para navegadores antigos
-        const textarea = document.createElement('textarea');
-        textarea.value = texto;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        alert('XML copiado para área de transferência!');
-    });
-}
-
-// Syntax highlighting básico para XML
-document.addEventListener('DOMContentLoaded', function() {
-    const xmlElements = document.querySelectorAll('.xml-content');
-    
-    xmlElements.forEach(function(element) {
-        let xml = element.textContent;
-        
-        // Destacar tags
-        xml = xml.replace(/(&lt;\/?)(\w+)(.*?)(&gt;)/g, function(match, p1, p2, p3, p4) {
-            return '<span class="xml-tag">' + p1 + p2 + '</span>' + 
-                   '<span class="xml-attr">' + p3 + '</span>' + 
-                   '<span class="xml-tag">' + p4 + '</span>';
-        });
-        
-        // Destacar valores de atributos
-        xml = xml.replace(/="(.*?)"/g, '="<span class="xml-value">$1</span>"');
-        
-        element.innerHTML = xml;
-    });
-});
-</script>
-{% endblock %}
